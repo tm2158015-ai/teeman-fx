@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forex Robot Builder</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #07111f;
+    --panel: #0d1a2b;
+    --panel2: #101f33;
+    --border: #20334b;
+    --text: #eef5ff;
+    --muted: #8fa5bf;
+    --green: #27d17f;
+    --red: #ff5c70;
+    --blue: #4da3ff;
+    --gold: #f2bd4b;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background:
+        radial-gradient(circle at top right, #123052 0%, #07111f 45%);
+    color: var(--text);
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    width: 240px;
+    background: #081422;
+    border-right: 1px solid var(--border);
+    padding: 22px 15px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.logo {
+    font-size: 21px;
+    font-weight: bold;
+    margin: 0 10px 25px;
+}
+
+.logo span {
+    color: var(--green);
+}
+
+.nav button {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    text-align: left;
+    padding: 13px;
+    border-radius: 9px;
+    margin-bottom: 5px;
+}
+
+.nav button:hover,
+.nav button.active {
+    background: #12243a;
+    color: white;
+}
+
+/* MAIN */
+
+.main {
+    margin-left: 240px;
+    width: calc(100% - 240px);
+    padding: 28px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.topbar h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.status {
+    background: #0b241a;
+    border: 1px solid #24543f;
+    color: var(--green);
+    padding: 7px 12px;
+    border-radius: 30px;
+    font-size: 12px;
+}
+
+/* PAGES */
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+/* CARDS */
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.card {
+    background: linear-gradient(145deg, var(--panel), #0a1626);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 18px;
+    box-shadow: 0 10px 30px #0003;
+}
+
+.metric-label {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.metric-value {
+    font-size: 25px;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+/* BUILDER */
+
+.builder-grid {
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 13px;
+}
+
+.field label {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.field input,
+.field select {
+    width: 100%;
+    background: #091727;
+    color: white;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 11px;
+}
+
+.field input:focus,
+.field select:focus {
+    outline: none;
+    border-color: var(--blue);
+}
+
+/* BUTTONS */
+
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+}
+
+.primary,
+.secondary,
+.danger {
+    border: 0;
+    border-radius: 9px;
+    padding: 11px 15px;
+    font-weight: bold;
+}
+
+.primary {
+    background: var(--green);
+    color: #04130b;
+}
+
+.secondary {
+    background: #17304c;
+    color: white;
+}
+
+.danger {
+    background: #3a1720;
+    color: #ffb8c2;
+}
+
+/* SIGNAL */
+
+.signal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.signal-box {
+    padding: 15px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #091727;
+}
+
+.signal-label {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.signal-value {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.buy {
+    color: var(--green);
+}
+
+.sell {
+    color: var(--red);
+}
+
+/* TABLE */
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    text-align: left;
+    padding: 11px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+}
+
+.table th {
+    color: var(--muted);
+}
+
+/* NOTICE */
+
+.notice {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+    padding: 12px;
+    border: 1px solid #34425a;
+    border-radius: 10px;
+    background: #0b1727;
+    margin-top: 12px;
+}
+
+/* CODE */
+
+.code {
+    background: #050d16;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 15px;
+    white-space: pre-wrap;
+    color: #bcd5ef;
+    font: 12px monospace;
+    max-height: 400px;
+    overflow: auto;
+}
+
+/* MOBILE */
+
+@media(max-width:900px) {
+
+    .sidebar {
+        width: 70px;
+    }
+
+    .logo {
+        font-size: 0;
+    }
+
+    .logo span {
+        font-size: 20px;
+    }
+
+    .nav button {
+        font-size: 0;
+        text-align: center;
+    }
+
+    .main {
+        margin-left: 70px;
+        width: calc(100% - 70px);
+        padding: 18px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .builder-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media(max-width:560px) {
+
+    .grid,
+    .form-grid,
+    .signal-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .topbar h1 {
+        font-size: 21px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        Forex <span>Robot</span>
+    </div>
+
+    <div class="nav">
+
+        <button class="active" onclick="showPage('dashboard', this)">
+            📊 Dashboard
+        </button>
+
+        <button onclick="showPage('builder', this)">
+            ⚙ Robot Builder
+        </button>
+
+        <button onclick="showPage('backtest', this)">
+            🧪 Backtest
+        </button>
+
+        <button onclick="showPage('signals', this)">
+            📈 Signals
+        </button>
+
+        <button onclick="showPage('export', this)">
+            💻 MT4 / MT5
+        </button>
+
+    </div>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+
+<!-- DASHBOARD -->
+
+<section id="dashboard" class="page active">
+
+    <div class="topbar">
+
+        <h1>Trading Dashboard</h1>
+
+        <span class="status">
+            ● System Ready
+        </span>
+
+    </div>
+
+
+    <div class="grid">
+
+        <div class="card">
+            <div class="metric-label">
+                Backtest Win Rate
+            </div>
+
+            <div class="metric-value" id="dashboardWin">
+                —
+            </div>
+        </div>
+
+
+        <div class="card">
+            <div class="metric-label">
+                Profit Factor
+            </div>
+
+            <div class="metric-value" id="dashboardPF">
+                —
+            </div>
+        </div>
+
+
+        <div class="card">
+            <div class="metric-label">
+                Max Drawdown
+            </div>
+
+            <div class="metric-value" id="dashboardDD">
+                —
+            </div>
+        </div>
+
+
+        <div class="card">
+            <div class="metric-label">
+                Net Return
+            </div>
+
+            <div class="metric-value" id="dashboardReturn">
+                —
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="builder-grid">
+
+        <!-- QUICK SETUP -->
+
+        <div class="card">
+
+            <h2>Robot Setup</h2>
+
+            <div class="form-grid">
+
+                <div class="field">
+
+                    <label>Symbol</label>
+
+                    <select id="symbol">
+
+                        <option>XAUUSD</option>
+                        <option>EURUSD</option>
+                        <option>GBPUSD</option>
+                        <option>USDJPY</option>
+                        <option>NAS100</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>Timeframe</label>
+
+                    <select id="timeframe">
+
+                        <option>5m</option>
+                        <option selected>15m</option>
+                        <option>1H</option>
+                        <option>4H</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>Strategy</label>
+
+                    <select id="strategy">
+
+                        <option>EMA + RSI</option>
+                        <option>Breakout</option>
+                        <option>Trend Following</option>
+                        <option>Support / Resistance</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>Risk Per Trade %</label>
+
+                    <input
+                        id="risk"
+                        type="number"
+                        value="1"
+                        min="0.1"
+                        max="10"
+                        step="0.1"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>Risk / Reward</label>
+
+                    <input
+                        id="rr"
+                        type="number"
+                        value="2"
+                        min="0.5"
+                        max="10"
+                        step="0.1"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>Account Balance</label>
+
+                    <input
+                        id="balance"
+                        type="number"
+                        value="10000"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="actions">
+
+                <button
+                    class="primary"
+                    onclick="generateSignal()"
+                >
+                    Generate Entry / SL / TP
+                </button>
+
+
+                <button
+                    class="secondary"
+                    onclick="runBacktest()"
+                >
+                    Run Backtest
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- SIGNAL -->
+
+        <div class="card">
+
+            <h2>Latest Signal</h2>
+
+            <div class="signal-grid">
+
+                <div class="signal-box">
+
+                    <div class="signal-label">
+                        Direction
+                    </div>
+
+                    <div
+                        id="direction"
+                        class="signal-value"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="signal-box">
+
+                    <div class="signal-label">
+                        Entry
+                    </div>
+
+                    <div
+                        id="entry"
+                        class="signal-value"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="signal-box">
+
+                    <div class="signal-label">
+                        Stop Loss
+                    </div>
+
+                    <div
+                        id="stopLoss"
+                        class="signal-value"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+
+                <div class="signal-box">
+
+                    <div class="signal-label">
+                        Take Profit
+                    </div>
+
+                    <div
+                        id="takeProfit"
+                        class="signal-value"
+                    >
+                        —
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="notice">
+
+                Demo signal generator only.
+                Connect real market data and a broker before
+                using live trading.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ROBOT BUILDER -->
+
+<section id="builder" class="page">
+
+    <div class="topbar">
+
+        <h1>Robot Builder</h1>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Strategy Rules</h2>
+
+        <div class="form-grid">
+
+
+            <div class="field">
+
+                <label>Fast EMA</label>
+
+                <input
+                    id="fastEMA"
+                    type="number"
+                    value="20"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>Slow EMA</label>
+
+                <input
+                    id="slowEMA"
+                    type="number"
+                    value="50"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>RSI Period</label>
+
+                <input
+                    id="rsiPeriod"
+                    type="number"
+                    value="14"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>RSI Buy Threshold</label>
+
+                <input
+                    id="rsiBuy"
+                    type="number"
+                    value="55"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>RSI Sell Threshold</label>
+
+                <input
+                    id="rsiSell"
+                    type="number"
+                    value="45"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>Maximum Trades / Day</label>
+
+                <input
+                    id="maxTrades"
+                    type="number"
+                    value="3"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>Maximum Daily Loss %</label>
+
+                <input
+                    id="maxLoss"
+                    type="number"
+                    value="3"
+                    step="0.1"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label>Trailing Stop</label>
+
+                <select id="trailingStop">
+
+                    <option>Off</option>
+                    <option>On</option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <div class="actions">
+
+            <button
+                class="primary"
+                onclick="createRobot()"
+            >
+                Create Robot Configuration
+            </button>
+
+        </div>
+
+
+        <div
+            id="robotConfiguration"
+            class="notice"
+        >
+            Configure your robot and click
+            "Create Robot Configuration".
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- BACKTEST -->
+
+<section id="backtest" class="page">
+
+    <div class="topbar">
+
+        <h1>Backtest Center</h1>
+
+    </div>
+
+
+    <div class="grid">
+
+        <div class="card">
+
+            <div class="metric-label">
+                Trades
+            </div>
+
+            <div
+                id="btTrades"
+                class="metric-value"
+            >
+                —
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="metric-label">
+                Wins
+            </div>
+
+            <div
+                id="btWins"
+                class="metric-value"
+            >
+                —
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="metric-label">
+                Losses
+            </div>
+
+            <div
+                id="btLosses"
+                class="metric-value"
+            >
+                —
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="metric-label">
+                Win Rate
+            </div>
+
+            <div
+                id="btWinRate"
+                class="metric-value"
+            >
+                —
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card" style="margin-top:18px">
+
+        <h2>Backtest Report</h2>
+
+        <table class="table">
+
+            <tr>
+                <th>Metric</th>
+                <th>Result</th>
+                <th>Description</th>
+            </tr>
+
+            <tr>
+                <td>Profit Factor</td>
+                <td id="btPF">—</td>
+                <td>Gross profit / gross loss</td>
+            </tr>
+
+            <tr>
+                <td>Maximum Drawdown</td>
+                <td id="btDrawdown">—</td>
+                <td>Peak-to-trough decline</td>
+            </tr>
+
+            <tr>
+                <td>Net Return</td>
+                <td id="btReturn">—</td>
+                <td>Simulated strategy return</td>
+            </tr>
+
+        </table>
+
+
+        <div class="actions">
+
+            <button
+                class="primary"
+                onclick="runBacktest()"
+            >
+                Run Demo Backtest
+            </button>
+
+        </div>
+
+
+        <div class="notice">
+
+            An 80–90% win rate cannot be guaranteed.
+            Test the strategy over large historical datasets
+            and out-of-sample periods before considering live use.
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- SIGNAL HISTORY -->
+
+<section id="signals" class="page">
+
+    <div class="topbar">
+
+        <h1>Signal History</h1>
+
+    </div>
+
+
+    <div class="card">
+
+        <table class="table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Time</th>
+                    <th>Symbol</th>
+                    <th>Side</th>
+                    <th>Entry</th>
+                    <th>SL</th>
+                    <th>TP</th>
+                    <th>R:R</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="signalHistory">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+
+
+
+<!-- EXPORT -->
+
+<section id="export" class="page">
+
+    <div class="topbar">
+
+        <h1>MT4 / MT5 Robot Export</h1>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>Expert Advisor Generator</h2>
+
+
+        <div class="notice">
+
+            This creates starter Expert Advisor code.
+            Before live trading, compile and test the EA
+            inside MetaTrader Strategy Tester and use a demo
+            account first.
+
+        </div>
+
+
+        <div class="actions">
+
+            <button
+                class="primary"
+                onclick="generateMT5()"
+            >
+                Generate MT5 EA
+            </button>
+
+
+            <button
+                class="secondary"
+                onclick="generateMT4()"
+            >
+                Generate MT4 EA
+            </button>
+
+        </div>
+
+
+        <pre
+            id="eaCode"
+            class="code"
+        >Select MT4 or MT5 to generate your EA.</pre>
+
+    </div>
+
+</section>
+
+
+</main>
+
+</div>
+
+
+<!-- ROBOT CONFIGURATION JSON -->
+
+<script type="application/json" id="robotConfig">
+
+{
+    "name": "Forex Robot Builder",
+    "version": "1.0",
+    "defaultSymbol": "XAUUSD",
+    "defaultTimeframe": "15m",
+    "defaultStrategy": "EMA + RSI",
+    "riskPercent": 1,
+    "riskReward": 2,
+    "fastEMA": 20,
+    "slowEMA": 50,
+    "rsiPeriod": 14,
+    "rsiBuyThreshold": 55,
+    "rsiSellThreshold": 45,
+    "maxTradesPerDay": 3,
+    "maxDailyLossPercent": 3
+}
+
+</script>
+
+
+
+<script>
+
+/* =========================================
+   FOREX ROBOT BUILDER
+========================================= */
+
+let signalHistory = [];
+
+
+/* PAGE NAVIGATION */
+
+function showPage(pageId, button) {
+
+    document
+        .querySelectorAll(".page")
+        .forEach(page => {
+            page.classList.remove("active");
+        });
+
+    document
+        .getElementById(pageId)
+        .classList.add("active");
+
+    document
+        .querySelectorAll(".nav button")
+        .forEach(btn => {
+            btn.classList.remove("active");
+        });
+
+    button.classList.add("active");
+}
+
+
+
+/* PRICE SETTINGS */
+
+function getBasePrice(symbol) {
+
+    const prices = {
+
+        XAUUSD: 4300,
+        EURUSD: 1.1700,
+        GBPUSD: 1.3400,
+        USDJPY: 148.000,
+        NAS100: 24500
+
+    };
+
+    return prices[symbol] || 100;
+
+}
+
+
+function getDecimals(symbol) {
+
+    if (symbol === "XAUUSD") return 2;
+
+    if (symbol === "NAS100") return 2;
+
+    if (symbol === "USDJPY") return 3;
+
+    return 5;
+
+}
+
+
+
+/* GENERATE SIGNAL */
+
+function generateSignal() {
+
+    const symbol =
+        document.getElementById("symbol").value;
+
+    const timeframe =
+        document.getElementById("timeframe").value;
+
+    const strategy =
+        document.getElementById("strategy").value;
+
+    const rr =
+        Number(document.getElementById("rr").value);
+
+    const base =
+        getBasePrice(symbol);
+
+    const decimals =
+        getDecimals(symbol);
+
+
+    let volatility;
+
+    if (symbol === "XAUUSD") {
+
+        volatility = 12;
+
+    } else if (symbol === "NAS100") {
+
+        volatility = 120;
+
+    } else if (symbol === "USDJPY") {
+
+        volatility = 0.8;
+
+    } else {
+
+        volatility = 0.004;
+
+    }
+
+
+    const direction =
+        Math.random() > 0.5
+            ? "BUY"
+            : "SELL";
+
+
+    const entry =
+        base +
+        (Math.random() - 0.5) *
+        volatility;
+
+
+    const stopDistance =
+        volatility * 0.38;
+
+
+    let stopLoss;
+    let takeProfit;
+
+
+    if (direction === "BUY") {
+
+        stopLoss =
+            entry - stopDistance;
+
+        takeProfit =
+            entry + stopDistance * rr;
+
+    } else {
+
+        stopLoss =
+            entry + stopDistance;
+
+        takeProfit =
+            entry - stopDistance * rr;
+
+    }
+
+
+    const signal = {
+
+        time: new Date().toLocaleTimeString(),
+
+        symbol,
+
+        timeframe,
+
+        strategy,
+
+        direction,
+
+        entry,
+
+        stopLoss,
+
+        takeProfit,
+
+        riskReward: rr
+
+    };
+
+
+    signalHistory.unshift(signal);
+
+
+    document.getElementById("direction").textContent =
+        direction;
+
+    document.getElementById("direction").className =
+        "signal-value " +
+        (direction === "BUY" ? "buy" : "sell");
+
+
+    document.getElementById("entry").textContent =
+        entry.toFixed(decimals);
+
+
+    document.getElementById("stopLoss").textContent =
+        stopLoss.toFixed(decimals);
+
+
+    document.getElementById("takeProfit").textContent =
+        takeProfit.toFixed(decimals);
+
+
+    renderSignalHistory();
+
+}
+
+
+
+/* SIGNAL HISTORY */
+
+function renderSignalHistory() {
+
+    const table =
+        document.getElementById("signalHistory");
+
+
+    table.innerHTML = "";
+
+
+    signalHistory
+        .slice(0, 20)
+        .forEach(signal => {
+
+            const decimals =
+                getDecimals(signal.symbol);
+
+
+            const row =
+                document.createElement("tr");
+
+
+            row.innerHTML = `
+
+                <td>${signal.time}</td>
+
+                <td>${signal.symbol}</td>
+
+                <td style="
+                    color:
+                    ${signal.direction === "BUY"
+                        ? "var(--green)"
+                        : "var(--red)"
+                    };
+                    font-weight:bold;
+                ">
+                    ${signal.direction}
+                </td>
+
+                <td>
+                    ${signal.entry.toFixed(decimals)}
+                </td>
+
+                <td>
+                    ${signal.stopLoss.toFixed(decimals)}
+                </td>
+
+                <td>
+                    ${signal.takeProfit.toFixed(decimals)}
+                </td>
+
+                <td>
+                    1:${signal.riskReward}
+                </td>
+
+            `;
+
+
+            table.appendChild(row);
+
+        });
+
+}
+
+
+
+/* BACKTEST */
+
+function runBacktest() {
+
+    /*
+       DEMO ONLY.
+
+       A real implementation should use
+       historical OHLC data.
+    */
+
+    const trades =
+        100 +
+        Math.floor(
+            Math.random() * 151
+        );
+
+
+    const winRate =
+        0.68 +
+        Math.random() * 0.18;
+
+
+    const wins =
+        Math.round(
+            trades * winRate
+        );
+
+
+    const losses =
+        trades - wins;
+
+
+    const profitFactor =
+        (
+            wins * 2
+        ) /
+        Math.max(1, losses);
+
+
+    const drawdown =
+        2 +
+        Math.random() * 7;
+
+
+    const risk =
+        Number(
+            document.getElementById("risk").value
+        );
+
+
+    const netReturn =
+        (
+            wins * 2 -
+            losses
+        ) *
+        risk *
+        0.35;
+
+
+    document.getElementById("btTrades")
+        .textContent = trades;
+
+
+    document.getElementById("btWins")
+        .textContent = wins;
+
+
+    document.getElementById("btLosses")
+        .textContent = losses;
+
+
+    document.getElementById("btWinRate")
+        .textContent =
+        (
+            wins / trades * 100
+        ).toFixed(1) + "%";
+
+
+    document.getElementById("btPF")
+        .textContent =
+        profitFactor.toFixed(2);
+
+
+    document.getElementById("btDrawdown")
+        .textContent =
+        drawdown.toFixed(1) + "%";
+
+
+    document.getElementById("btReturn")
+        .textContent =
+        netReturn.toFixed(1) + "%";
+
+
+    document.getElementById("dashboardWin")
+        .textContent =
+        (
+            wins / trades * 100
+        ).toFixed(1) + "%";
+
+
+    document.getElementById("dashboardPF")
+        .textContent =
+        profitFactor.toFixed(2);
+
+
+    document.getElementById("dashboardDD")
+        .textContent =
+        drawdown.toFixed(1) + "%";
+
+
+    document.getElementById("dashboardReturn")
+        .textContent =
+        netReturn.toFixed(1) + "%";
+
+}
+
+
+
+/* CREATE ROBOT */
+
+function createRobot() {
+
+    const robot = {
+
+        name: "My Forex Robot",
+
+        symbol:
+            document.getElementById("symbol").value,
+
+        timeframe:
+            document.getElementById("timeframe").value,
+
+        strategy:
+            document.getElementById("strategy").value,
+
+        riskPercent:
+            Number(
+                document.getElementById("risk").value
+            ),
+
+        riskReward:
+            Number(
+                document.getElementById("rr").value
+            ),
+
+        accountBalance:
+            Number(
+                document.getElementById("balance").value
+            ),
+
+        fastEMA:
+            Number(
+                document.getElementById("fastEMA").value
+            ),
+
+        slowEMA:
+            Number(
+                document.getElementById("slowEMA").value
+            ),
+
+        rsiPeriod:
+            Number(
+                document.getElementById("rsiPeriod").value
+            ),
+
+        rsiBuyThreshold:
+            Number(
+                document.getElementById("rsiBuy").value
+            ),
+
+        rsiSellThreshold:
+            Number(
+                document.getElementById("rsiSell").value
+            ),
+
+        maxTradesPerDay:
+            Number(
+                document.getElementById("maxTrades").value
+            ),
+
+        maxDailyLossPercent:
+            Number(
+                document.getElementById("maxLoss").value
+            ),
+
+        trailingStop:
+            document.getElementById("trailingStop").value
+
+    };
+
+
+    document.getElementById(
+        "robotConfiguration"
+    ).innerHTML = `
+
+        <strong>Robot Created</strong>
+
+        <pre class="code">
+${JSON.stringify(robot, null, 2)}
+        </pre>
+
+    `;
+
+}
+
+
+
+/* MT5 */
+
+function generateMT5() {
+
+    const symbol =
+        document.getElementById("symbol").value;
+
+    const timeframe =
+        document.getElementById("timeframe").value;
+
+    const strategy =
+        document.getElementById("strategy").value;
+
+    const risk =
+        document.getElementById("risk").value;
+
+    const rr =
+        document.getElementById("rr").value;
+
+
+    const code = `
+
+// ============================================
+// Forex Robot Builder
+// MT5 Expert Advisor
+// ============================================
+
+#include <Trade/Trade.mqh>
+
+CTrade trade;
+
+input string InpSymbol = "${symbol}";
+input string InpTimeframe = "${timeframe}";
+input string InpStrategy = "${strategy}";
+
+input double RiskPercent = ${risk};
+input double RiskReward = ${rr};
+
+int OnInit()
+{
+    Print("Forex Robot Builder MT5 EA started.");
+
+    return(INIT_SUCCEEDED);
+}
+
+
+void OnTick()
+{
+
+    // ========================================
+    // STRATEGY LOGIC
+    // ========================================
+    //
+    // Add validated EMA / RSI / breakout
+    // conditions here.
+    //
+    // Example:
+    //
+    // if(BuyCondition)
+    // {
+    //     // Calculate lot size
+    //     // Calculate SL
+    //     // Calculate TP
+    //     // Send BUY
+    // }
+    //
+    // ========================================
+
+}
+
+`;
+
+
+    document.getElementById("eaCode")
+        .textContent = code;
+
+}
+
+
+
+/* MT4 */
+
+function generateMT4() {
+
+    const symbol =
+        document.getElementById("symbol").value;
+
+    const timeframe =
+        document.getElementById("timeframe").value;
+
+    const strategy =
+        document.getElementById("strategy").value;
+
+    const risk =
+        document.getElementById("risk").value;
+
+    const rr =
+        document.getElementById("rr").value;
+
+
+    const code = `
+
+// ============================================
+// Forex Robot Builder
+// MT4 Expert Advisor
+// ============================================
+
+#property strict
+
+extern string InpSymbol = "${symbol}";
+extern string InpTimeframe = "${timeframe}";
+extern string InpStrategy = "${strategy}";
+
+extern double RiskPercent = ${risk};
+extern double RiskReward = ${rr};
+
+
+int OnInit()
+{
+
+    Print("Forex Robot Builder MT4 EA started.");
+
+    return(INIT_SUCCEEDED);
+
+}
+
+
+void OnTick()
+{
+
+    // ========================================
+    // STRATEGY LOGIC
+    // ========================================
+    //
+    // Add validated EMA / RSI / breakout
+    // conditions here.
+    //
+    // Calculate:
+    //
+    // Entry
+    // Stop Loss
+    // Take Profit
+    // Lot Size
+    //
+    // Then send the order.
+    //
+    // ========================================
+
+}
+
+`;
+
+
+    document.getElementById("eaCode")
+        .textContent = code;
+
+}
+
+
+
+/* STARTUP */
+
+generateSignal();
+
+runBacktest();
+
+</script>
+
+</body>
+</html>
